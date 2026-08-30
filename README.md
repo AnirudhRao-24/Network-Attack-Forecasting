@@ -2,7 +2,7 @@
 
 > **Problem Statement ID:** SIH PS 26153 | **Domain:** Artificial Intelligence & Cybersecurity (NTRO)  
 > **Core Innovation:** Causal Network World Modeling via State-Transition Dynamics ($P(S_{t+1} \mid S_t)$) for Proactive Infiltration Forecasting.
-> **🚀 Live Prototype URL:** [https://network-attack-forecasting-7p0h.onrender.com](https://anirudhrao-24.github.io/Network-Attack-Forecasting/)
+> **🚀 Live Prototype URL:** [https://anirudhrao-24.github.io/Network-Attack-Forecasting/](https://anirudhrao-24.github.io/Network-Attack-Forecasting/)
 ---
 
 ## 1. System Overview
