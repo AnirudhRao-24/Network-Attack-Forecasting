@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Network Attack Forecasting Engine | NTRO SIH 26153</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="terminal-container">
+        <header class="terminal-header">
+            <div>
+                <h1 class="glitch-title">NETWORK WORLD MODEL // THREAT FORECASTER</h1>
+                <p class="subtitle">NTRO Problem Statement ID 26153 | Predictive Autoregressive Rollout</p>
+            </div>
+            <div class="system-status">
+                <span class="status-indicator"></span> SYSTEM ONLINE (AIR-GAPPED)
+            </div>
+        </header>
+
+        <section class="control-panel">
+            <div class="panel-item">
+                <label for="k-steps">FORECAST HORIZON (K-STEPS):</label>
+                <select id="k-steps">
+                    <option value="4">4 Steps (20s)</option>
+                    <option value="6" selected>6 Steps (30s)</option>
+                    <option value="8">8 Steps (40s)</option>
+                </select>
+            </div>
+            <div class="panel-item">
+                <label for="csv-upload">UPLOAD TELEMETRY (CSV):</label>
+                <input type="file" id="csv-upload" accept=".csv" class="file-upload-input" />
+            </div>
+            <button id="run-btn" class="execute-btn">EXECUTE TRAJECTORY ROLLOUT</button>
+        </section>
+
+        <main class="dashboard-grid">
+            <section class="grid-card full-width">
+                <h2>AUTOREGRESSIVE INFILTRATION TRAJECTORY (FORWARD SIMULATION)</h2>
+                <div id="trajectory-output" class="trajectory-cards"></div>
+            </section>
+
+            <section class="grid-card">
+                <h2>TEMPORAL ATTENTION ALLOCATION (XAI)</h2>
+                <p class="card-desc">Quantifies which historical 5s observation drove the state forecast.</p>
+                <div id="attention-bar-container" class="attention-bars"></div>
+            </section>
+
+            <section class="grid-card">
+                <h2>CONTRIBUTING TELEMETRY INDICATORS</h2>
+                <p class="card-desc">Current state of top driving packet/flow features (T=0).</p>
+                <ul class="feature-telemetry-list">
+                    <li><span>Flow Count:</span> <strong id="val-flow">N/A</strong></li>
+                    <li><span>Byte Volume:</span> <strong id="val-byte">N/A</strong></li>
+                    <li><span>SYN Ratio:</span> <strong id="val-syn">N/A</strong></li>
+                    <li><span>RST Ratio:</span> <strong id="val-rst">N/A</strong></li>
+                    <li><span>Port Entropy:</span> <strong id="val-entropy">N/A</strong></li>
+                    <li><span>Mean Packet IAT:</span> <strong id="val-iat">N/A</strong></li>
+                </ul>
+            </section>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

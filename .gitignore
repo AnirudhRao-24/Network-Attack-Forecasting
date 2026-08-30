@@ -1,0 +1,19 @@
+# Python & Environment
+__pycache__/
+*.py[cod]
+*$py.class
+.env
+venv/
+env/
+.ipynb_checkpoints/
+
+# Datasets (Large CSV files should not be pushed to GitHub)
+*.csv
+*.zip
+data/*.csv
+03-02-2018.csv
+
+# System / IDE
+.DS_Store
+.vscode/
+.idea/
