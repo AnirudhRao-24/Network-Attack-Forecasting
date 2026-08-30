@@ -1,5 +1,5 @@
 // NOTE: Update this URL to your Render deployment URL once live
-const API_URL = "http://127.0.0.1:8000/upload-csv";
+const API_URL = "https://network-attack-forecasting-7p0h.onrender.com/upload-csv";
 
 document.getElementById("run-btn").addEventListener("click", async () => {
     const runBtn = document.getElementById("run-btn");
