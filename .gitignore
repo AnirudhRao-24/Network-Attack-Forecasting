@@ -1,19 +1,22 @@
-# Python & Environment
+# Python virtual environments & bytecode
 __pycache__/
 *.py[cod]
 *$py.class
-.env
 venv/
 env/
+.venv/
+.env
+
+# Jupyter & Colab artifacts
 .ipynb_checkpoints/
+*/.ipynb_checkpoints/*
 
-# Datasets (Large CSV files should not be pushed to GitHub)
-*.csv
-*.zip
-data/*.csv
-03-02-2018.csv
-
-# System / IDE
+# System & OS files
 .DS_Store
-.vscode/
-.idea/
+Thumbs.db
+
+# Large dataset caches (ignore multi-GB raw CSVs, keep sample scripts)
+data/*.zip
+data/*.pcap
+data/02-14-2018.csv
+data/03-02-2018.csv
