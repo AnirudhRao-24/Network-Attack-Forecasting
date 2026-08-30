@@ -2,6 +2,7 @@ import io
 import os
 import numpy as np
 import pandas as pd
+import scipy.stats
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -30,7 +31,7 @@ class TemporalAttention(nn.Module):
         return context_vector, attn_weights
 
 class AttentionWorldModel(nn.Module):
-    def __init__(self, input_dim: int = 6, hidden_dim: int = 64, num_classes: int = 5, num_layers: int = 2):
+    def __init__(self, input_dim=6, hidden_dim=64, num_classes=5, num_layers=2):
         super(AttentionWorldModel, self).__init__()
         self.lstm = nn.LSTM(input_dim, hidden_dim, num_layers=num_layers, batch_first=True, dropout=0.2)
         self.attention = TemporalAttention(hidden_dim)
@@ -51,6 +52,10 @@ class AttentionWorldModel(nn.Module):
         pred_next_state = self.dynamics_head(context)
         pred_stage_logits = self.stage_head(context)
         return pred_next_state, pred_stage_logits, attn_weights
+
+def calculate_entropy(series):
+    counts = series.value_counts()
+    return scipy.stats.entropy(counts)
 
 STAGE_MAP = {
     0: "Benign (Normal)",
@@ -76,15 +81,49 @@ else:
 async def forecast_from_csv(file: UploadFile = File(...), k_steps: int = 6):
     contents = await file.read()
     try:
-        df = pd.read_csv(io.BytesIO(contents))
+        df = pd.read_csv(io.BytesIO(contents), low_memory=False)
     except Exception:
         raise HTTPException(status_code=400, detail="Invalid CSV file format.")
 
-    if len(df) < 12:
-        raise HTTPException(status_code=400, detail="CSV must contain at least 12 rows (60s of telemetry).")
+    # Standardize column headers for reliable parsing
+    df.columns = df.columns.str.strip().str.lower()
     
-    # Extract the last 12 rows and first 6 feature columns
-    seq = df.iloc[-12:, :6].values.astype(np.float32)
+    processed_cols = ['flow_count', 'byte_volume', 'syn_ratio', 'rst_ratio', 'port_entropy', 'iat_mean']
+    raw_cols = ['timestamp', 'dst port', 'totlen fwd pkts', 'syn flag cnt', 'rst flag cnt', 'flow iat mean']
+
+    # Route 1: Data is already processed into 6 columns
+    if all(col in df.columns for col in processed_cols):
+        seq_df = df[processed_cols]
+
+    # Route 2: Data is raw CIC-IDS2018 format and needs on-the-fly aggregation
+    elif all(col in df.columns for col in raw_cols):
+        df.replace([np.inf, -np.inf], np.nan, inplace=True)
+        df.dropna(subset=['timestamp'], inplace=True)
+        df['timestamp'] = pd.to_datetime(df['timestamp'], errors='coerce')
+        df.dropna(subset=['timestamp'], inplace=True)
+        df.sort_values('timestamp', inplace=True)
+        df.set_index('timestamp', inplace=True)
+
+        seq_df = df.resample('5S').agg(
+            flow_count=('dst port', 'count'),
+            byte_volume=('totlen fwd pkts', 'sum'),
+            syn_ratio=('syn flag cnt', 'mean'),
+            rst_ratio=('rst flag cnt', 'mean'),
+            port_entropy=('dst port', calculate_entropy),
+            iat_mean=('flow iat mean', 'mean')
+        )
+        seq_df.ffill(inplace=True)
+        seq_df.dropna(inplace=True)
+        
+    # Route 3: Unknown file structure
+    else:
+        raise HTTPException(status_code=400, detail="Unrecognized CSV format. Please upload raw CIC-IDS traffic logs or a pre-processed 6-column matrix.")
+
+    if len(seq_df) < 12:
+        raise HTTPException(status_code=400, detail="Not enough traffic. The file must contain at least 60 seconds of telemetry.")
+    
+    # Extract the final 12 rows as the model input tensor
+    seq = seq_df.iloc[-12:].values.astype(np.float32)
     curr_seq = torch.tensor(seq).unsqueeze(0).to(device)
     
     trajectories = []
